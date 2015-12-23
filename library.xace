@@ -13,7 +13,7 @@
 		license:     "Eiffel Forum Freeware License v2 (see license.txt)"
 	</description>
 
-	<cluster name="eiffel-tcc" location="${ECURSES}">
+	<cluster name="eiffel-tcc" location=".">
 		<option name="abstract" value="True"/>
 		<cluster name="base"/>
 		<option unless="${GOBO_OS}=windows">
