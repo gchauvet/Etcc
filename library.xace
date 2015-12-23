@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<library name="eiffel-tcc" prefix="etcc_">
+
+	<description>
+		description:[
+
+			Xace file for the TCC Library.
+			]
+		library:     "ECURSES Library"
+		author:      "Guillaume CHAUVET [gchauvet <at> zatarox.com]"
+		copyright:   "Copyright (c) 2015, Guillaume CHAUVET and others"
+		license:     "Eiffel Forum Freeware License v2 (see license.txt)"
+	</description>
+
+	<cluster name="eiffel-tcc" location="${ECURSES}">
+		<option name="abstract" value="True"/>
+		<cluster name="base"/>
+		<option unless="${GOBO_OS}=windows">
+			<option name="link" value="-ltcc"/>
+			<option name="link" value="-ldl"/>
+		</option>
+		<option if="${GOBO_OS}=windows">
+			<option name="link" value="tcc.lib"/>
+		</option>
+	</cluster>
+</library>
