@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project name="tcc_bonjour" default="help">
+
+	<description>
+		system: "TCC binding example"
+		copyright: "Copyright (c) 2015, Guillaume CHAUVET"
+		license: "Eiffel Forum License 2"
+	</description>
+
+	<inherit>
+		<parent location="${GOBO}/misc/eiffel.eant">
+			<redefine target="init_system"/>
+		</parent>
+	</inherit>
+
+<!-- Implementation -->
+
+	<target name="init_system">
+		<set name="system" value="tcc_bonjour"/>
+		<set name="library" value="TCC"/>
+		<set name="system_dir" value="."/>
+	</target>
+
+</project>
