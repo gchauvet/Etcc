@@ -9,6 +9,12 @@ note
 
 class WR_TCC_FACADE
 
+inherit
+	MEMORY
+		redefine
+			dispose
+	end
+
 create
 	make
 
