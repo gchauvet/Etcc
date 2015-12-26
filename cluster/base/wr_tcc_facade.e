@@ -31,8 +31,10 @@ feature
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
+			l_warning: ANY
 		do
-			l_code := tcc_set_warning (context, warning_name, value)
+			l_warning := warning_name.to_c
+			l_code := tcc_set_warning (context, $l_warning, value)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -43,11 +45,15 @@ feature
 	-- Preprocessor implementation
 
 	add_include_path (pathname: STRING)
+		require
+			a_valid_pathname: file_system.is_valid_directory(pathname)
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
+			l_value: ANY
 		do
-			l_code := tcc_add_include_path (context, pathname)
+			l_value := pathname.to_c
+			l_code := tcc_add_include_path (context, $l_value)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -58,8 +64,10 @@ feature
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
+			l_value: ANY
 		do
-			l_code := tcc_add_include_sysinclude_path (context, pathname)
+			l_value := pathname.to_c
+			l_code := tcc_add_include_sysinclude_path (context, $l_value)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -67,8 +75,13 @@ feature
 	end
 
 	define_symbol (symbol: STRING; value: STRING)
+		local
+			l_symbol: ANY
+			l_value: ANY
 		do
-			tcc_define_symbol (context, symbol, value)
+			l_symbol := symbol.to_c
+			l_value := value.to_c
+			tcc_define_symbol (context, $l_symbol, $l_value)
 	end
 
 	undefine_symbol (symbol: STRING)
@@ -83,8 +96,10 @@ feature
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
+			l_value: ANY
 		do
-			l_code := tcc_add_file (context, filename)
+			l_value := filename.to_c
+			l_code := tcc_add_file (context, $l_value)
 			 if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -92,11 +107,15 @@ feature
 	end
 
 	compile_string (content: STRING)
+		require
+			a_not_empty_content: not content.is_empty
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
+			l_value: ANY
 		do
-			l_code := tcc_compile_string (context, content)
+			l_value := content.to_c
+			l_code := tcc_compile_string (context, $l_value)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -107,11 +126,15 @@ feature
 	--  Linking Implementation
 
 	add_library_path (pathname: STRING)
+		require
+			a_valid_pathname: file_system.is_valid_directory(pathname)
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
+			l_value: ANY
 		do
-			l_code := tcc_library_path (context, pathname)
+			l_value := pathname.to_c
+			l_code := tcc_library_path (context, $l_value)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -122,8 +145,10 @@ feature
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
+			l_value: ANY
 		do
-			l_code := tcc_add_library (context, libraryname)
+			l_value := libraryname.to_c
+			l_code := tcc_add_library (context, $l_value)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -134,8 +159,10 @@ feature
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
+			l_value: ANY
 		do
-			l_code := tcc_output_file (context, filename)
+			l_value := filename.to_c
+			l_code := tcc_output_file (context, $l_value)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -148,6 +175,22 @@ feature
 			l_code: INTEGER
 		do
 			l_code := tcc_set_output_type (context, output_type)
+			if l_code < 0 then
+				create l_exception.make (l_code)
+				l_exception.raise
+			end
+	end
+
+	run (args: ARRAY[STRING])
+		require
+			args_not_void: args /= Void
+		local
+			l_exception: WR_TCC_EXCEPTION
+			l_code: INTEGER
+			l_values: ANY
+		do
+			l_values := args.to_c
+			l_code := tcc_run (context, args.count, $l_values)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -192,7 +235,7 @@ feature {NONE}
 			"C signature (TCCState *) use <libtcc.h>"
 	end
 
-	tcc_set_warning(a_context: POINTER; warning_name: STRING; value: INTEGER) : INTEGER
+	tcc_set_warning(a_context: POINTER; warning_name: POINTER; value: INTEGER) : INTEGER
 		require
 			not_void_context_pointer: a_context /= Void
 		external
@@ -202,7 +245,7 @@ feature {NONE}
 feature {NONE}
 	-- Preprocessor bindings
 
-	tcc_add_include_path (a_context: POINTER; pathname: STRING) : INTEGER
+	tcc_add_include_path (a_context: POINTER; pathname: POINTER) : INTEGER
 		require
 			not_void_context_pointer: a_context /= Void
 			a_valid_pathname: file_system.is_valid_directory(pathname)
@@ -210,7 +253,7 @@ feature {NONE}
 			"C signature (TCCState *, const char *) use <libtcc.h>"
 	end
 
-	tcc_add_include_sysinclude_path (a_context: POINTER; pathname: STRING) : INTEGER
+	tcc_add_include_sysinclude_path (a_context: POINTER; pathname: POINTER) : INTEGER
 		require
 			not_void_context_pointer: a_context /= Void
 			not_void_valid_symbol: symbol /= Void
@@ -220,7 +263,7 @@ feature {NONE}
 			"C signature (TCCState *, const char *) use <libtcc.h>"
 	end
 
-	tcc_define_symbol (a_context: POINTER; symbol: STRING; value: STRING)
+	tcc_define_symbol (a_context: POINTER; symbol: POINTER; value: POINTER)
 		require
 			not_void_context_pointer: a_context /= Void
 			a_valid_symbol: symbol /= Void
@@ -231,7 +274,7 @@ feature {NONE}
 			"C signature (TCCState *, const char *, const char *) use <libtcc.h>"
 	end
 
-	tcc_undefine_symbol (a_context: POINTER; symbol: STRING)
+	tcc_undefine_symbol (a_context: POINTER; symbol: POINTER)
 		require
 			not_void_context_pointer: a_context /= Void
 			a_valid_symbol: symbol /= Void
@@ -243,7 +286,7 @@ feature {NONE}
 feature {NONE}
 	-- Compiling bindings
 
-	tcc_add_file (a_context: POINTER; filename: STRING) : INTEGER
+	tcc_add_file (a_context: POINTER; filename: POINTER) : INTEGER
 		require
 			not_void_context_pointer: a_context /= Void
 			a_valid_filename: file_system.is_valid_filename(filename)
@@ -251,11 +294,10 @@ feature {NONE}
 			"C signature (TCCState *, const char *) use <libtcc.h>"
 	end
 
-	tcc_compile_string (a_context: POINTER; content: STRING) : INTEGER
+	tcc_compile_string (a_context: POINTER; content: POINTER) : INTEGER
 		require
 			not_void_context_pointer: a_context /= Void
 			a_valid_content: content /= Void
-			a_not_empty_content: not content.is_empty
 		external
 			"C signature (TCCState *, const char *) use <libtcc.h>"
 	end
@@ -278,7 +320,7 @@ feature {NONE}
 			"C signature (TCCState *, int) use <libtcc.h>"
 	end
 
-	tcc_add_library_path(a_context: POINTER; pathname: STRING) : INTEGER
+	tcc_add_library_path(a_context: POINTER; pathname: POINTER) : INTEGER
 		require
 			not_void_context_pointer: a_context /= Void
 			a_valid_pathname: file_system.is_valid_directory(pathname)
@@ -286,7 +328,7 @@ feature {NONE}
 			"C signature (TCCState *, const char *) use <libtcc.h>"
 	end
 
-	tcc_add_library(a_context: POINTER; libraryname: STRING) : INTEGER
+	tcc_add_library(a_context: POINTER; libraryname: POINTER) : INTEGER
 		require
 			not_void_context_pointer: a_context /= Void
 			a_valid_libraryname: libraryname /= Void
@@ -295,20 +337,28 @@ feature {NONE}
 			"C signature (TCCState *, const char *) use <libtcc.h>"
 	end
 
-	tcc_output_file(a_context: POINTER; filename: STRING) : INTEGER
+	tcc_output_file(a_context: POINTER; filename: POINTER) : INTEGER
 		require
 			not_void_context_pointer: a_context /= Void
-			a_valid_filename: file_system.is_valid_filename (filename)
+			a_valid_filename_pointer: filename /= Void
 		external
 			"C signature (TCCState *, const char *) use <libtcc.h>"
 	end
 
-	tcc_set_lib_path(a_context: POINTER; path: STRING)
+	tcc_set_lib_path(a_context: POINTER; path: POINTER)
 		require
 			not_void_context_pointer: a_context /= Void
-			a_valid_pathname: file_system.is_valid_directory(path)
 		external
 			"C signature (TCCState *, const char *) use <libtcc.h>"
+	end
+
+	tcc_run(a_context: POINTER; argc: INTEGER; argv: POINTER) : INTEGER
+		require
+			not_void_context_pointer: a_context /= Void
+			positive_argc: argc >= 0
+			not_void_argv_pointer: argv /= Void
+		external
+			"C signature (TCCState *, int, char **) use <libtcc.h>"
 	end
 
 end
