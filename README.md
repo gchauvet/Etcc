@@ -1,13 +1,14 @@
-![alt tag](http://4.bp.blogspot.com/-Xsbd1jB28S0/VMuL2jwhUWI/AAAAAAAAEDc/kaFm7dhh6vo/s1600/work%2Bin%2Bprogress.png)
-
 # Etcc
 ###Eiffel binding to TinyCC library
+![alt tag](http://4.bp.blogspot.com/-Xsbd1jB28S0/VMuL2jwhUWI/AAAAAAAAEDc/kaFm7dhh6vo/s1600/work%2Bin%2Bprogress.png)
 
 This is a simple binding library to the embedded TCC compiler.
 
 ![alt tag](etcc.gif)
 
-# Requirement
+## Requirement
+
+### Dependencies
 
 Ubuntu distribution:
 ```sh
@@ -17,7 +18,7 @@ cd Etcc
 export TCC_LIB=`pwd`
 ```
 
-# Installation
+### Installation
 
 Ubuntu distribution:
 ```sh
@@ -26,7 +27,7 @@ cd Etcc
 export TCC_LIB=`pwd`
 ```
 
-# Example
+## Example
 A short example how to use this binding :
 ```eiffel
 class TCC_BONJOUR
@@ -49,3 +50,16 @@ feature {NONE}
 end
 
 ```
+
+## Communication
+
+- [GitHub Issues](https://github.com/gchauvet/Etcc/issues)
+
+## Bugs and Feedback
+
+For bugs, questions and discussions please use the [Github Issues](https://github.com/gchauvet/Etcc/issues).
+
+## LICENSE
+
+Copyright 2015 Guillaume CHAUVET
+Licensed under the Eiffel Forum License 2.
