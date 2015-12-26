@@ -9,9 +9,21 @@ This is a simple binding library to the embedded TCC compiler.
 
 # Requirement
 
-Under Ubuntu :
+Ubuntu distribution:
 ```sh
 sudo apt-get install libtcc-dev
+git clone https://github.com/gchauvet/Etcc.git
+cd Etcc
+export TCC_LIB=`pwd`
+```
+
+# Installation
+
+Ubuntu distribution:
+```sh
+git clone https://github.com/gchauvet/Etcc.git
+cd Etcc
+export TCC_LIB=`pwd`
 ```
 
 # Example
