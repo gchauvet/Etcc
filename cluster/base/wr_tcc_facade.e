@@ -169,12 +169,14 @@ feature
 			end
 	end
 
-	set_output_type (output_type: INTEGER)
+	set_output_type (output_type: WR_TCC_OUTPUT)
+		require
+			output_type_not_void: output_type /= Void
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
 		do
-			l_code := tcc_set_output_type (context, output_type)
+			l_code := tcc_set_output_type (context, output_type.item)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -312,20 +314,13 @@ feature {NONE}
 			"C signature (TCCState *, const char *) use <libtcc.h>"
 	end
 
-feature
-	-- Linking bindings options
-	tcc_output_memory: INTEGER = 0
-	tcc_output_program: INTEGER = 1
-	tcc_output_shared: INTEGER = 2
-	tcc_output_static: INTEGER = 3
-
 feature {NONE}
 	-- Linking bindings
 
-	tcc_set_output_type (a_context: POINTER; output_type: INTEGER) : INTEGER
+	tcc_set_output_type (a_context: POINTER; output_type: NATURAL) : INTEGER
 		require
 			not_void_context_pointer: a_context /= Void
-			a_output_type_valid: output_type >= tcc_output_memory and output_type <= tcc_output_static
+			a_output_type_valid: output_type >= 0
 		external
 			"C signature (TCCState *, int) use <libtcc.h>"
 	end
