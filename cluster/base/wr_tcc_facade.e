@@ -155,7 +155,7 @@ feature
 			end
 	end
 
-	output_file (filename: STRING)
+	set_output_file (filename: STRING)
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
