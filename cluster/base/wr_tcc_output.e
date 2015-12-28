@@ -17,7 +17,7 @@ feature {NONE}
 
 	make(selected: NATURAL)
 		require
-			selected_is_valid: members.contains (selected)
+			selected_not_void: selected /= Void
 		do
 			item := selected
 	end
@@ -38,5 +38,8 @@ feature {NONE}
 		once
 			Result := <<memory, program, shared, static>>
 	end
+
+invariant
+	item_is_valid: members.contains (item)
 
 end
