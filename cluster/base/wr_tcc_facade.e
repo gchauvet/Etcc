@@ -125,7 +125,7 @@ feature
 feature
 	--  Linking Implementation
 
-	add_library_path (pathname: STRING)
+	add_library (pathname: STRING)
 		require
 			a_valid_pathname: file_system.is_valid_directory(pathname)
 		local
@@ -134,21 +134,21 @@ feature
 			l_value: ANY
 		do
 			l_value := pathname.to_c
-			l_code := tcc_library_path (context, $l_value)
+			l_code := tcc_add_library (context, $l_value)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
 			end
 	end
 
-	add_library (libraryname: STRING)
+	add_library_path (libraryname: STRING)
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
 			l_value: ANY
 		do
 			l_value := libraryname.to_c
-			l_code := tcc_add_library (context, $l_value)
+			l_code := tcc_add_library_path (context, $l_value)
 			if l_code < 0 then
 				create l_exception.make (l_code)
 				l_exception.raise
@@ -196,6 +196,16 @@ feature
 				l_exception.raise
 			end
 	end
+
+	set_lib_path(path: STRING)
+		require
+			path_is_valid: file_system.is_valid_directory (path)
+		local
+                        l_value: ANY
+                do
+                        l_value := path.to_c
+                        tcc_set_lib_path (context, $l_value)
+        end
 
 feature {NONE}
 
