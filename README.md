@@ -1,6 +1,5 @@
 # Etcc
 ###Eiffel binding to TinyCC library
-![alt tag](http://4.bp.blogspot.com/-Xsbd1jB28S0/VMuL2jwhUWI/AAAAAAAAEDc/kaFm7dhh6vo/s1600/work%2Bin%2Bprogress.png)
 
 This is a simple binding library to the embedded TCC compiler.
 
@@ -40,6 +39,7 @@ feature {NONE}
 			l_tcc: WR_TCC_FACADE
 		do
 		create l_tcc.make
+		l_tcc.set_lib_path ("/usr/lib/x86_64-linux-gnu") -- Set the correct path to libtcc(1).a
 		l_tcc.compile_string ("int main(int argc, char **argv)  { printf(%"Bonjour !%"); return 0; }")
 		l_tcc.run(<<>>)
 	end
