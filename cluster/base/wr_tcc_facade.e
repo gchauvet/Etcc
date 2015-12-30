@@ -45,8 +45,6 @@ feature
 	-- Preprocessor implementation
 
 	add_include_path (pathname: STRING)
-		require
-			a_valid_pathname: file_system.is_valid_directory(pathname)
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
@@ -85,8 +83,11 @@ feature
 	end
 
 	undefine_symbol (symbol: STRING)
+	local
+		l_symbol: ANY
 		do
-			tcc_undefine_symbole (context, symbol)
+			l_symbol := symbol.to_c
+			tcc_undefine_symbol (context, $l_symbol)
 	end
 
 feature
@@ -126,8 +127,6 @@ feature
 	--  Linking Implementation
 
 	add_library (pathname: STRING)
-		require
-			a_valid_pathname: file_system.is_valid_directory(pathname)
 		local
 			l_exception: WR_TCC_EXCEPTION
 			l_code: INTEGER
@@ -200,8 +199,6 @@ feature
 	end
 
 	set_lib_path(path: STRING)
-		require
-			path_is_valid: file_system.is_valid_directory (path)
 		local
                         l_value: ANY
                 do
@@ -230,28 +227,25 @@ feature {NONE}
 		external
 			"C signature () : TCCState * use <libtcc.h>"
 		ensure
-			have_a_pointer: Result /= Void
+			return_a_pointer: Result /= Void
 	end
 
 	tcc_delete (a_context: POINTER)
-		require
-			not_void_context_pointer: a_context /= Void
 		external
 			"C signature (TCCState *) use <libtcc.h>"
 	end
 
 	tcc_enable_debug (a_context: POINTER)
-		require
-			not_void_context_pointer: a_context /= Void
 		external
 			"C signature (TCCState *) use <libtcc.h>"
 	end
 
 	tcc_set_warning(a_context: POINTER; warning_name: POINTER; value: INTEGER) : INTEGER
 		require
-			not_void_context_pointer: a_context /= Void
+			not_void_warning_name_pointer: warning_name /= Void
+			not_void_value_pointer: value /= Void
 		external
-			"C signature (TCCState *, const char *, const char *) use <libtcc.h>"
+			"C signature (TCCState *, const char *, const char *) : EIF_INTEGER use <libtcc.h>"
 	end
 
 feature {NONE}
@@ -259,38 +253,29 @@ feature {NONE}
 
 	tcc_add_include_path (a_context: POINTER; pathname: POINTER) : INTEGER
 		require
-			not_void_context_pointer: a_context /= Void
-			a_valid_pathname: file_system.is_valid_directory(pathname)
+			not_void_pathname: pathname /= Void
 		external
-			"C signature (TCCState *, const char *) use <libtcc.h>"
+			"C signature (TCCState *, const char *) : EIF_INTEGER use <libtcc.h>"
 	end
 
 	tcc_add_include_sysinclude_path (a_context: POINTER; pathname: POINTER) : INTEGER
 		require
-			not_void_context_pointer: a_context /= Void
-			not_void_valid_symbol: symbol /= Void
-			not_empty_valid_symbol: not symbol.is_empty
-			a_valid_pathname: file_system.is_valid_directory(pathname)
+			not_void_pathname: pathname /= Void
 		external
-			"C signature (TCCState *, const char *) use <libtcc.h>"
+			"C signature (TCCState *, const char *) : EIF_INTEGER use <libtcc.h>"
 	end
 
 	tcc_define_symbol (a_context: POINTER; symbol: POINTER; value: POINTER)
 		require
-			not_void_context_pointer: a_context /= Void
 			a_valid_symbol: symbol /= Void
-			a_not_empty_symbol: not symbol.is_empty
 			a_valid_value: value /= Void
-			a_not_empty_value: not value.is_empty
 		external
 			"C signature (TCCState *, const char *, const char *) use <libtcc.h>"
 	end
 
 	tcc_undefine_symbol (a_context: POINTER; symbol: POINTER)
 		require
-			not_void_context_pointer: a_context /= Void
 			a_valid_symbol: symbol /= Void
-			a_not_empty_symbol: not symbol.is_empty
 		external
 			"C signature (TCCState *, const char *) use <libtcc.h>"
 	end
@@ -300,18 +285,16 @@ feature {NONE}
 
 	tcc_add_file (a_context: POINTER; filename: POINTER) : INTEGER
 		require
-			not_void_context_pointer: a_context /= Void
-			a_valid_filename: file_system.is_valid_filename(filename)
+			not_void_filename: filename /= Void
 		external
-			"C signature (TCCState *, const char *) use <libtcc.h>"
+			"C signature (TCCState *, const char *) : EIF_INTEGER use <libtcc.h>"
 	end
 
 	tcc_compile_string (a_context: POINTER; content: POINTER) : INTEGER
 		require
-			not_void_context_pointer: a_context /= Void
 			a_valid_content: content /= Void
 		external
-			"C signature (TCCState *, const char *) use <libtcc.h>"
+			"C signature (TCCState *, const char *) : EIF_INTEGER use <libtcc.h>"
 	end
 
 feature {NONE}
@@ -319,51 +302,48 @@ feature {NONE}
 
 	tcc_set_output_type (a_context: POINTER; output_type: NATURAL) : INTEGER
 		require
-			not_void_context_pointer: a_context /= Void
 			a_output_type_valid: output_type >= 0
 		external
-			"C signature (TCCState *, int) use <libtcc.h>"
+			"C signature (TCCState *, int) : EIF_INTEGER use <libtcc.h>"
 	end
 
 	tcc_add_library_path(a_context: POINTER; pathname: POINTER) : INTEGER
 		require
-			not_void_context_pointer: a_context /= Void
-			a_valid_pathname: file_system.is_valid_directory(pathname)
+			not_void_pathname: pathname /= Void
 		external
-			"C signature (TCCState *, const char *) use <libtcc.h>"
+			"C signature (TCCState *, const char *) : EIF_INTEGER use <libtcc.h>"
 	end
 
 	tcc_add_library(a_context: POINTER; libraryname: POINTER) : INTEGER
 		require
-			not_void_context_pointer: a_context /= Void
-			a_valid_libraryname: libraryname /= Void
-			a_not_empty_libraryname: not libraryname.is_empty
+			not_void_libraryname: libraryname /= Void
 		external
-			"C signature (TCCState *, const char *) use <libtcc.h>"
+			"C signature (TCCState *, const char *) : EIF_INTEGER use <libtcc.h>"
 	end
 
 	tcc_output_file(a_context: POINTER; filename: POINTER) : INTEGER
 		require
-			not_void_context_pointer: a_context /= Void
-			a_valid_filename_pointer: filename /= Void
+			not_void_filename: filename /= Void
 		external
-			"C signature (TCCState *, const char *) use <libtcc.h>"
+			"C signature (TCCState *, const char *) : EIF_INTEGER use <libtcc.h>"
 	end
 
 	tcc_set_lib_path(a_context: POINTER; path: POINTER)
 		require
-			not_void_context_pointer: a_context /= Void
+			not_void_path: path /= Void
 		external
 			"C signature (TCCState *, const char *) use <libtcc.h>"
 	end
 
 	tcc_run(a_context: POINTER; argc: INTEGER; argv: POINTER) : INTEGER
 		require
-			not_void_context_pointer: a_context /= Void
 			positive_argc: argc >= 0
-			not_void_argv_pointer: argv /= Void
+			not_void_argv: argv /= Void
 		external
-			"C signature (TCCState *, int, char **) use <libtcc.h>"
+			"C signature (TCCState *, int, char **) : EIF_INTEGER use <libtcc.h>"
 	end
+
+invariant
+	not_void_context: context /= Void
 
 end
